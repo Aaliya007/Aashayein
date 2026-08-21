@@ -5,6 +5,7 @@ export interface Referral {
   caseId: number;
   patientId: number;
   facilityId: number;
+  ashaId: number;
   reason: string;
   status: ReferralStatus;
   createdAt: string;

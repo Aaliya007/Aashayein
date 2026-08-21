@@ -9,15 +9,15 @@ interface PriorityChipProps {
 }
 
 const chipStyles: Record<PriorityLevel, string> = {
-  high: 'border-rose-200 bg-rose-100',
-  medium: 'border-amber-200 bg-amber-100',
-  low: 'border-teal-200 bg-teal-100',
+  high: 'border-critical bg-critical-light',
+  medium: 'border-warning bg-warning-light',
+  low: 'border-primary bg-primary-light',
 };
 
 const textStyles: Record<PriorityLevel, string> = {
-  high: 'text-rose-800',
-  medium: 'text-amber-800',
-  low: 'text-teal-800',
+  high: 'text-critical',
+  medium: 'text-warning',
+  low: 'text-primary',
 };
 
 const defaultLabels: Record<PriorityLevel, string> = {

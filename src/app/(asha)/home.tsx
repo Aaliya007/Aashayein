@@ -1,87 +1,21 @@
+import { StatusBadge } from '@/components/asha/StatusBadge';
+import { AppButton } from '@/components/ui/AppButton';
+import { AppText } from '@/components/ui/AppText';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { PriorityChip, getPriorityFromScore } from '@/components/ui/PriorityChip';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { AppText } from '@/components/ui/AppText';
-import { mockHealthRequests } from '@/data/mock/healthRequests';
-import { useAuthStore } from '@/stores/authStore';
+import { useAshaStore } from '@/stores/ashaStore';
+import { formatDate, patientName } from '@/utils/asha';
 import { getFirstName, getGreeting } from '@/utils/greeting';
-import { AlertTriangle, ClipboardList, MapPin } from 'lucide-react-native';
-import { View } from 'react-native';
-
-const queuePreview = [
-  { id: 1, name: 'Ram Kaur', village: 'Rampur', score: 9, issue: 'High fever, 3 days' },
-  { id: 2, name: 'Baljit Singh', village: 'Dharampura', score: 6, issue: 'Persistent cough' },
-  { id: 3, name: 'Meena Devi', village: 'Rampur', score: 2, issue: 'ANC follow-up due' },
-];
+import { router } from 'expo-router';
+import { AlertTriangle, ClipboardList, PlusCircle, Users } from 'lucide-react-native';
+import { Pressable, View } from 'react-native';
 
 export default function AshaHomeScreen() {
-  const user = useAuthStore((s) => s.user);
-  const firstName = getFirstName(user?.name ?? 'ASHA Worker');
-
-  return (
-    <Screen
-      scrollable
-      header={
-        <ScreenHeader
-          contextLabel="ASHA Portal"
-          title={`${getGreeting()}, ${firstName}`}
-        />
-      }>
-      <BaseCard className="border-primary/20 bg-primary-light">
-        <AppText variant="subtitle" className="text-primary">
-          Smart Daily Queue
-        </AppText>
-        <AppText variant="body" className="mt-1 text-text-secondary">
-          {queuePreview.length} households prioritized for today
-        </AppText>
-      </BaseCard>
-
-      <View className="mb-3 flex-row flex-wrap gap-3">
-        <BaseCard className="mb-0 min-w-[46%] flex-1">
-          <ClipboardList size={20} color="#0284C7" />
-          <AppText variant="title" className="mt-2">
-            {mockHealthRequests.length}
-          </AppText>
-          <AppText variant="caption">Open Requests</AppText>
-        </BaseCard>
-        <BaseCard className="mb-0 min-w-[46%] flex-1">
-          <AlertTriangle size={20} color="#BE123C" />
-          <AppText variant="title" className="mt-2">
-            1
-          </AppText>
-          <AppText variant="caption">Critical Alerts</AppText>
-        </BaseCard>
-      </View>
-
-      <AppText variant="subtitle" className="mb-3">
-        Priority Queue
-      </AppText>
-
-      {queuePreview.map((item) => (
-        <BaseCard key={item.id}>
-          <View className="mb-2 flex-row items-start justify-between gap-2">
-            <View className="flex-1">
-              <AppText variant="label">{item.name}</AppText>
-              <AppText variant="caption">{item.village}</AppText>
-            </View>
-            <PriorityChip level={getPriorityFromScore(item.score)} />
-          </View>
-          <AppText variant="body" className="text-text-secondary">
-            {item.issue}
-          </AppText>
-        </BaseCard>
-      ))}
-
-      <BaseCard>
-        <View className="flex-row items-center gap-2">
-          <MapPin size={18} color="#0F766E" />
-          <AppText variant="label">Offline mode ready</AppText>
-        </View>
-        <AppText variant="caption" className="mt-1">
-          Visit records will sync automatically when connectivity returns.
-        </AppText>
-      </BaseCard>
-    </Screen>
-  );
+  const cases = useAshaStore((state) => state.cases); const patients = useAshaStore((state) => state.patients); const users = useAshaStore((state) => state.patientUsers); const visits = useAshaStore((state) => state.visits);
+  const attention = [...cases].filter((item) => item.status !== 'resolved').sort((a, b) => b.priorityScore - a.priorityScore).slice(0, 3);
+  const highCount = cases.filter((item) => item.priorityScore >= 8 && item.status !== 'resolved').length; const referrals = cases.filter((item) => item.status === 'referred').length;
+  return <Screen scrollable header={<ScreenHeader contextLabel="ASHA Portal" title={`${getGreeting()}, ${getFirstName('Sunita Devi')}`} />}><AppText variant="body" className="mb-4 text-text-secondary">Hereâ€™s what needs your attention today.</AppText><View className="mb-4 flex-row flex-wrap gap-3"><Stat title="Active Cases" value={String(cases.filter((item) => ['active', 'in_progress'].includes(item.status)).length)} icon={<ClipboardList size={19} color="#0284C7" />} onPress={() => router.push('/(asha)/cases')} /><Stat title="High Priority" value={String(highCount)} icon={<AlertTriangle size={19} color="#BE123C" />} onPress={() => router.push('/(asha)/cases')} /><Stat title="Referrals" value={String(referrals)} icon={<AlertTriangle size={19} color="#D97706" />} onPress={() => router.push('/(asha)/cases')} /><Stat title="Visits Today" value={String(visits.filter((item) => formatDate(item.visitedAt) === formatDate(new Date().toISOString())).length)} icon={<PlusCircle size={19} color="#0F766E" />} onPress={() => router.push('/(asha)/visits/new')} /></View><View className="mb-3 flex-row items-center justify-between"><AppText variant="title">Needs Attention</AppText><Pressable onPress={() => router.push('/(asha)/cases')}><AppText variant="label" className="text-primary">View all</AppText></Pressable></View>{attention.map((item) => { const patient = patients.find((entry) => entry.id === item.patientId); return <Pressable key={item.id} onPress={() => router.push({ pathname: '/(asha)/cases/[id]', params: { id: String(item.id) } })}><BaseCard><View className="flex-row justify-between"><View className="flex-1"><AppText variant="label">{patientName(patient, users)}</AppText><AppText variant="caption">Case #{item.id} Â· {formatDate(item.updatedAt)}</AppText></View><PriorityChip level={getPriorityFromScore(item.priorityScore)} /></View><AppText variant="body" className="mt-2 text-text-secondary">{item.symptoms}</AppText><View className="mt-3"><StatusBadge status={item.status} /></View></BaseCard></Pressable>; })}<AppText variant="title" className="mb-3 mt-2">Quick Actions</AppText><View className="gap-3"><AppButton title="View Cases" onPress={() => router.push('/(asha)/cases')} /><AppButton title="View Patients" variant="outline" onPress={() => router.push('/(asha)/patients')} /><AppButton title="New Visit" variant="outline" onPress={() => router.push('/(asha)/visits/new')} /></View></Screen>;
 }
+function Stat({ title, value, icon, onPress }: { title: string; value: string; icon: React.ReactNode; onPress: () => void }) { return <Pressable onPress={onPress} className="min-w-[46%] flex-1"><BaseCard className="mb-0"><View className="flex-row items-center justify-between">{icon}<AppText variant="title">{value}</AppText></View><AppText variant="caption" className="mt-2">{title}</AppText></BaseCard></Pressable>; }

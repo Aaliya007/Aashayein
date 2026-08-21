@@ -1,7 +1,8 @@
 export interface Visit {
   id: number;
   caseId: number;
-  facilityId: number;
+  ashaId: number;
+  facilityId?: number;
   temperature?: number;
   condition: string;
   symptoms: string;
