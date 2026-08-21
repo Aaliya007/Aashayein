@@ -1,4 +1,5 @@
 import { mockAshaFacilities, mockCases, mockPatientUsers, mockPatients, mockReferrals, mockVisits } from '@/data/mock/asha';
+import { mockVaccinations } from '@/data/mock/vaccinations';
 import type { Visit } from '@/types/visit';
 import { create } from 'zustand';
 
@@ -11,6 +12,7 @@ interface AshaState {
   visits: typeof mockVisits;
   facilities: typeof mockAshaFacilities;
   referrals: typeof mockReferrals;
+  vaccinations: typeof mockVaccinations;
   addVisit: (visit: NewVisit) => Visit;
 }
 
@@ -21,6 +23,7 @@ export const useAshaStore = create<AshaState>((set, get) => ({
   visits: mockVisits,
   facilities: mockAshaFacilities,
   referrals: mockReferrals,
+  vaccinations: mockVaccinations,
   addVisit: (visit) => {
     const created: Visit = { ...visit, id: Math.max(0, ...get().visits.map((item) => item.id)) + 1, ashaId: 1, visitedAt: visit.visitedAt ?? new Date().toISOString() };
     set((state) => ({ visits: [created, ...state.visits], cases: state.cases.map((item) => item.id === created.caseId ? { ...item, status: 'in_progress', updatedAt: created.visitedAt } : item) }));
