@@ -4,7 +4,7 @@ import { Href } from 'expo-router';
 export function getHomeRouteForRole(role: UserRole): Href {
   switch (role) {
     case 'asha':
-      return '/(asha)/home';
+      return '/(asha)/(tabs)/home';
     case 'patient':
       return '/(patient)/home';
     case 'admin':
