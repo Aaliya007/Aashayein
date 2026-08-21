@@ -1,98 +1,101 @@
+import { AuthShell } from '@/components/common/AuthShell';
+import { DemoAccounts } from '@/components/common/DemoAccounts';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppInput } from '@/components/ui/AppInput';
 import { AppText } from '@/components/ui/AppText';
 import { Screen } from '@/components/ui/Screen';
-import { useAppContext } from '@/context/AppContext';
-import { login } from '@/services/auth';
-import { setAuthToken } from '@/services/api';
+import { ScreenBackground } from '@/components/ui/ScreenBackground';
+import { TextLink } from '@/components/ui/TextLink';
+import { useCopy } from '@/hooks/useCopy';
+import { useLogin, useSendLoginOtp } from '@/hooks/useAuthMutations';
 import { router } from 'expo-router';
-import { HeartPulse } from 'lucide-react-native';
+import { KeyRound, Smartphone } from 'lucide-react-native';
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 export default function LoginScreen() {
-  const { setUser } = useAppContext();
+  const { t } = useCopy();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const loginMutation = useLogin();
+  const otpMutation = useSendLoginOtp();
 
-  const handleLogin = async () => {
-    setError('');
-    setLoading(true);
-
-    try {
-      const result = await login({ identifier, password });
-      setAuthToken(result.token);
-      setUser(result.user);
-      router.replace('/home');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+  const handleLogin = () => {
+    loginMutation.mutate({ identifier, password }, { onError: () => undefined });
   };
 
-  return (
-    <Screen scrollable>
-      <View className="mb-8 mt-6 items-center">
-        <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-primary-light">
-          <HeartPulse size={32} color="#2F7D6D" accessibilityLabel="Aashayein logo" />
-        </View>
-        <AppText variant="title" className="text-primary">
-          Welcome Back
-        </AppText>
-        <AppText variant="body" className="mt-2 text-center text-text-secondary">
-          Sign in to continue your healthcare journey
-        </AppText>
-      </View>
+  const handleOtpLogin = () => {
+    otpMutation.mutate(identifier, { onError: () => undefined });
+  };
 
-      <View className="gap-4">
+  const errorMessage = loginMutation.error?.message || otpMutation.error?.message;
+
+  return (
+    <ScreenBackground>
+      <Screen scrollable className="bg-transparent" contentClassName="py-7">
+        <AuthShell
+        contextLabel={t('loginEyebrow')}
+        title={t('loginTitle')}
+        subtitle={t('loginBody')}
+        footer={
+          <View className="flex-row items-center justify-center gap-1 pb-4">
+            <AppText variant="caption">{t('noAccount')}</AppText>
+            <TextLink label={t('register')} onPress={() => router.push('/auth/register')} />
+          </View>
+        }>
+        <DemoAccounts
+          hint={t('demoHint')}
+          onSelect={(account) => {
+            setIdentifier(account.identifier);
+            setPassword(account.password);
+          }}
+        />
+
         <AppInput
-          label="Mobile or Email"
-          placeholder="Enter mobile number or email"
+          label={t('mobileOrEmail')}
+          placeholder={t('mobilePlaceholder')}
           value={identifier}
           onChangeText={setIdentifier}
           keyboardType="email-address"
+          autoComplete="tel"
+          icon={Smartphone}
         />
         <AppInput
-          label="Password"
-          placeholder="Enter your password"
+          label={t('password')}
+          placeholder={t('passwordPlaceholder')}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          autoComplete="password"
+          icon={KeyRound}
         />
-        {error ? (
-          <AppText variant="caption" className="text-danger">
-            {error}
-          </AppText>
+
+        {errorMessage ? (
+          <View className="rounded-xl bg-critical-light px-3 py-2">
+            <AppText variant="caption" className="text-critical">{errorMessage}</AppText>
+          </View>
         ) : null}
-      </View>
 
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Forgot password"
-        className="mt-4 min-h-[44px] justify-center self-end active:opacity-70">
-        <AppText variant="label" className="text-primary">
-          Forgot password?
-        </AppText>
-      </Pressable>
+        <TextLink
+          label={t('forgotPassword')}
+          tone="secondary"
+          align="right"
+          onPress={() => router.push('/auth/forgot-password')}
+        />
 
-      <View className="mt-6">
-        <AppButton title="Login" onPress={handleLogin} loading={loading} />
-      </View>
-
-      <View className="mt-6 flex-row items-center justify-center gap-1 pb-4">
-        <AppText variant="caption">Don&apos;t have an account?</AppText>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Create account"
-          className="min-h-[44px] justify-center active:opacity-70">
-          <AppText variant="label" className="text-primary">
-            Register
-          </AppText>
-        </Pressable>
-      </View>
-    </Screen>
+        <AppButton
+          title={t('signIn')}
+          onPress={handleLogin}
+          loading={loginMutation.isPending}
+        />
+        <AppButton
+          title={t('signInWithOtp')}
+          variant="outline"
+          onPress={handleOtpLogin}
+          loading={otpMutation.isPending}
+        />
+        </AuthShell>
+      </Screen>
+    </ScreenBackground>
   );
 }
