@@ -1,3 +1,4 @@
+import { BrandMark } from '@/components/common/BrandMark';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { AppButton } from '@/components/ui/AppButton';
 import { Screen } from '@/components/ui/Screen';
@@ -5,7 +6,6 @@ import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { AppText } from '@/components/ui/AppText';
 import { useLogout } from '@/hooks/useAuthMutations';
 import { useAuthStore } from '@/stores/authStore';
-import { HeartPulse } from 'lucide-react-native';
 import { View } from 'react-native';
 
 export default function PatientHomePlaceholder() {
@@ -17,8 +17,8 @@ export default function PatientHomePlaceholder() {
       scrollable
       header={<ScreenHeader contextLabel="Citizen Portal" title="Patient Home" />}>
       <BaseCard className="items-center py-8">
-        <View className="mb-4 rounded-full bg-secondary-light p-4">
-          <HeartPulse size={32} color="#0284C7" />
+        <View className="mb-4">
+          <BrandMark size="sm" />
         </View>
         <AppText variant="title" className="text-center">
           Patient Portal Placeholder
