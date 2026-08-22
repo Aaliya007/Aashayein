@@ -85,48 +85,72 @@ export default function PatientHome() {
         />
       </BaseCard>
 
-      {/* Quick Actions */}
-      <AppText variant="label" className="mb-3">
-        QUICK ACTIONS
-      </AppText>
+      
+        {/* Quick Actions */}
+       
+<AppText variant="label" className="mb-3">
+  QUICK ACTIONS
+</AppText>
 
-      <BaseCard className="mb-4">
-        <View className="flex-row flex-wrap justify-between">
-          
-          <View className="mb-3 w-[48%]">
-            <AppButton
-              title="My Requests"
-              variant="outline"
-              onPress={() => router.push('/my-requests')}
-            />
-          </View>
+<BaseCard className="mb-4">
+  <View className="flex-row flex-wrap justify-between">
 
-          <View className="mb-3 w-[48%]">
-            <AppButton
-              title="Appointments"
-              variant="outline"
-              onPress={() => router.push('/appointments')}
-            />
-          </View>
+    {/* My Requests */}
+    <View className="mb-3 w-[48%]">
+      <AppButton
+        title="My Requests"
+        variant="outline"
+        onPress={() => router.push('/my-requests')}
+      />
+    </View>
 
-          <View className="mb-3 w-[48%]">
-            <AppButton
-              title="Vaccinations"
-              variant="outline"
-              onPress={() => router.push('/vaccinations')}
-            />
-          </View>
+    {/* Appointments */}
+    <View className="mb-3 w-[48%]">
+      <AppButton
+        title="Appointments"
+        variant="outline"
+        onPress={() => router.push('/appointments')}
+      />
+    </View>
 
-          <View className="mb-3 w-[48%]">
-            <AppButton
-              title="Health History"
-              variant="outline"
-              onPress={() => router.push('/health-history')}
-            />
-          </View>
+    {/* Vaccinations */}
+    <View className="mb-3 w-[48%]">
+      <AppButton
+        title="Vaccinations"
+        variant="outline"
+        onPress={() => router.push('/vaccinations')}
+      />
+    </View>
 
-        </View>
-      </BaseCard>
+    {/* Health History */}
+    <View className="mb-3 w-[48%]">
+      <AppButton
+        title="Health History"
+        variant="outline"
+        onPress={() => router.push('/health-history')}
+      />
+    </View>
+
+    {/* Profile */}
+    <View className="mb-3 w-[48%]">
+      <AppButton
+        title="Profile"
+        variant="outline"
+        onPress={() => router.push('/profile')}
+      />
+    </View>
+
+    {/* Settings */}
+    <View className="mb-3 w-[48%]">
+      <AppButton
+        title="Settings"
+        variant="outline"
+        onPress={() => router.push('/settings')}
+      />
+    </View>
+
+  </View>
+</BaseCard>
 
       {/* Nearby Facilities */}
       <BaseCard className="mb-4">

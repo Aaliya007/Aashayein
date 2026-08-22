@@ -6,26 +6,28 @@ import { BaseCard } from '@/components/ui/BaseCard';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 
-const appointments = [
+const vaccinations = [
   {
     id: '1',
-    type: 'ASHA Home Visit',
-    date: '25 Aug 2026',
-    time: '10:00 AM',
-    location: 'Your Home',
-    status: 'Upcoming',
+    name: 'BCG',
+    status: 'Completed',
+    date: '10 Jan 2026',
   },
   {
     id: '2',
-    type: 'PHC Consultation',
+    name: 'Polio',
+    status: 'Completed',
+    date: '15 Feb 2026',
+  },
+  {
+    id: '3',
+    name: 'Measles',
+    status: 'Due',
     date: '28 Aug 2026',
-    time: '11:30 AM',
-    location: 'Primary Health Centre',
-    status: 'Upcoming',
   },
 ];
 
-export default function Appointments() {
+export default function Vaccinations() {
   const router = useRouter();
 
   return (
@@ -34,50 +36,51 @@ export default function Appointments() {
       header={
         <ScreenHeader
           contextLabel="Citizen Portal"
-          title="Appointments"
+          title="Vaccinations"
         />
       }
     >
       <AppText variant="caption">
-        Your upcoming healthcare appointments
+        Vaccination schedule and records
       </AppText>
 
-      {appointments.map((appointment) => (
+      {vaccinations.map((vaccination) => (
         <Pressable
-          key={appointment.id}
+          key={vaccination.id}
           onPress={() =>
-            router.push('/appointment-details')
+            router.push('/(patient)/vaccination-details')
           }
         >
           <BaseCard className="mt-4">
             <View className="flex-row justify-between">
-              <View className="flex-1">
+              <View>
                 <AppText variant="title">
-                  {appointment.type}
-                </AppText>
-
-                <AppText
-                  variant="body"
-                  className="mt-2"
-                >
-                  {appointment.date}
-                </AppText>
-
-                <AppText variant="caption">
-                  {appointment.time}
+                  {vaccination.name}
                 </AppText>
 
                 <AppText
                   variant="caption"
-                  className="mt-2"
+                  className="mt-1"
                 >
-                  {appointment.location}
+                  {vaccination.date}
                 </AppText>
               </View>
 
-              <View className="rounded-full bg-teal-100 px-3 py-2">
-                <AppText className="text-teal-800">
-                  {appointment.status}
+              <View
+                className={`rounded-full px-3 py-2 ${
+                  vaccination.status === 'Due'
+                    ? 'bg-amber-100'
+                    : 'bg-teal-100'
+                }`}
+              >
+                <AppText
+                  className={
+                    vaccination.status === 'Due'
+                      ? 'text-amber-800'
+                      : 'text-teal-800'
+                  }
+                >
+                  {vaccination.status}
                 </AppText>
               </View>
             </View>
@@ -86,7 +89,7 @@ export default function Appointments() {
               variant="caption"
               className="mt-4 text-teal-700"
             >
-              View Appointment →
+              View Details →
             </AppText>
           </BaseCard>
         </Pressable>
@@ -94,4 +97,3 @@ export default function Appointments() {
     </Screen>
   );
 }
-
