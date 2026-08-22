@@ -11,7 +11,8 @@ export function QueryProvider({ children }: QueryProviderProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            retry: 1,
+            retry: 2,
+            retryDelay: (attempt) => Math.min(2000 * 2 ** attempt, 8000),
             staleTime: 30_000,
             refetchOnWindowFocus: false,
           },

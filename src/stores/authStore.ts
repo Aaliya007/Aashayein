@@ -5,7 +5,6 @@ export type OtpPurpose = 'register' | 'login' | 'forgot_password';
 
 interface AuthState {
   user: User | null;
-  token: string | null;
   isHydrated: boolean;
   pendingOtpMobile: string | null;
   otpPurpose: OtpPurpose | null;
@@ -17,9 +16,13 @@ interface AuthState {
     password: string;
     village?: string;
     district?: string;
+    address?: string;
+    dateOfBirth?: string;
+    gender?: string;
+    emergencyContact?: string;
   } | null;
 
-  setAuth: (user: User, token: string) => void;
+  setAuth: (user: User) => void;
   clearAuth: () => void;
   setHydrated: (value: boolean) => void;
   setPendingOtp: (mobile: string, purpose: OtpPurpose) => void;
@@ -30,17 +33,15 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  token: null,
   isHydrated: false,
   pendingOtpMobile: null,
   otpPurpose: null,
   pendingRegistration: null,
 
-  setAuth: (user, token) => set({ user, token }),
+  setAuth: (user) => set({ user }),
   clearAuth: () =>
     set({
       user: null,
-      token: null,
       pendingOtpMobile: null,
       otpPurpose: null,
       pendingRegistration: null,

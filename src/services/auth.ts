@@ -1,9 +1,6 @@
-import { MOCK_OTP } from '@/constants/appContent';
-import {
-  mockAdminUser,
-  mockAshaUser,
-  mockPatientUser,
-} from '@/data/mock/users';
+import { getAsha, login as loginRequest, registerAsha, registerCitizen } from '@/services/api';
+import { mapAshaToUser, mapLoginToUser, mapRegisterToUser } from '@/services/api/mappers';
+import type { Gender } from '@/types/api';
 import { User, UserRole } from '@/types/user';
 
 export interface LoginCredentials {
@@ -19,26 +16,10 @@ export interface RegisterPayload {
   role: UserRole;
   village?: string;
   district?: string;
-}
-
-export interface OtpPayload {
-  mobile: string;
-  otp: string;
-}
-
-export interface AuthResult {
-  user: User;
-  token: string;
-}
-
-export interface OtpSendResult {
-  message: string;
-  expiresInSeconds: number;
-}
-
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  address?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  emergencyContact?: string;
 }
 
 function isValidMobile(mobile: string): boolean {
@@ -49,57 +30,46 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
 
-function isValidIdentifier(identifier: string): boolean {
-  const trimmed = identifier.trim();
-  return isValidMobile(trimmed) || isValidEmail(trimmed);
+function extractMobile(identifier: string): string {
+  const digits = identifier.replace(/\D/g, '');
+  return digits.length === 10 ? digits : identifier.trim();
 }
 
-function resolveMockUser(identifier: string): User {
-  const trimmed = identifier.trim();
-
-  if (trimmed === 'admin@aashayein.org' || trimmed === '9876543212') {
-    return mockAdminUser;
-  }
-  if (trimmed === '9876543211' || trimmed === 'priya.sharma@example.com') {
-    return mockPatientUser;
-  }
-  if (trimmed === '9876543210' || trimmed === 'sunita.asha@example.com') {
-    return mockAshaUser;
-  }
-
-  if (trimmed.includes('@')) {
-    return { ...mockPatientUser, email: trimmed };
-  }
-
-  return { ...mockAshaUser, mobile: trimmed };
+function mapGender(value?: string): Gender {
+  const normalized = (value ?? '').trim().toUpperCase();
+  if (normalized === 'MALE' || normalized === 'M') return 'MALE';
+  if (normalized === 'OTHER' || normalized === 'O') return 'OTHER';
+  return 'FEMALE';
 }
 
-export async function login(credentials: LoginCredentials): Promise<AuthResult> {
+export async function login(credentials: LoginCredentials): Promise<{ user: User }> {
   const { identifier, password } = credentials;
 
   if (!identifier.trim() || !password.trim()) {
-    throw new Error('Please enter your mobile/email and password.');
+    throw new Error('Please enter your mobile number and password.');
   }
 
-  if (!isValidIdentifier(identifier)) {
-    throw new Error('Enter a valid 10-digit mobile number or email address.');
+  const mobile = extractMobile(identifier);
+  if (!isValidMobile(mobile)) {
+    throw new Error('Enter a valid 10-digit mobile number. Email sign-in is not supported by the backend.');
   }
 
-  if (password.length < 4) {
-    throw new Error('Password must be at least 4 characters.');
+  const result = await loginRequest({ mobile, password });
+  let user = mapLoginToUser(result, { mobile });
+
+  if (user.role === 'asha') {
+    try {
+      const asha = await getAsha(result.id);
+      user = { ...mapAshaToUser(asha), patientId: result.patientId ?? undefined };
+    } catch {
+      user = { ...user, ashaId: result.id };
+    }
   }
 
-  await delay(700);
-
-  const user = resolveMockUser(identifier);
-
-  return {
-    user,
-    token: `mock-jwt-${user.role}-${user.id}`,
-  };
+  return { user };
 }
 
-export async function register(payload: RegisterPayload): Promise<OtpSendResult> {
+export async function register(payload: RegisterPayload): Promise<{ user: User }> {
   if (!payload.name.trim()) {
     throw new Error('Please enter your full name.');
   }
@@ -116,106 +86,68 @@ export async function register(payload: RegisterPayload): Promise<OtpSendResult>
     throw new Error('Admin accounts cannot be created through self-registration.');
   }
 
-  await delay(600);
+  if (payload.role === 'asha') {
+    const result = await registerAsha({
+      name: payload.name.trim(),
+      mobile: payload.mobile.trim(),
+      email: payload.email?.trim() || `${payload.mobile.trim()}@aashayein.local`,
+      password: payload.password,
+      village: payload.village?.trim() || '',
+      district: payload.district?.trim() || '',
+    });
+    return {
+      user: mapRegisterToUser(result, {
+        mobile: payload.mobile.trim(),
+        role: 'asha',
+        village: payload.village,
+        district: payload.district,
+      }),
+    };
+  }
+
+  const result = await registerCitizen({
+    name: payload.name.trim(),
+    mobile: payload.mobile.trim(),
+    email: payload.email?.trim() || `${payload.mobile.trim()}@aashayein.local`,
+    password: payload.password,
+    village: payload.village?.trim() || '',
+    district: payload.district?.trim() || '',
+    address: payload.address?.trim() || payload.village?.trim() || '',
+    dateOfBirth: payload.dateOfBirth?.trim() || '1990-01-01',
+    gender: mapGender(payload.gender),
+    emergencyContact: payload.emergencyContact?.trim() || payload.mobile.trim(),
+  });
 
   return {
-    message: `OTP sent to +91 ${payload.mobile}. Use ${MOCK_OTP} for demo.`,
-    expiresInSeconds: 300,
+    user: mapRegisterToUser(result, {
+      mobile: payload.mobile.trim(),
+      role: 'patient',
+      village: payload.village,
+      district: payload.district,
+    }),
   };
 }
 
-export async function sendOtp(mobile: string): Promise<OtpSendResult> {
-  if (!isValidMobile(mobile)) {
-    throw new Error('Enter a valid 10-digit mobile number.');
-  }
-
-  await delay(500);
-
-  return {
-    message: `OTP sent to +91 ${mobile}. Use ${MOCK_OTP} for demo.`,
-    expiresInSeconds: 300,
-  };
+export async function sendOtp(_mobile: string): Promise<never> {
+  throw new Error('OTP sign-in is not available. Please sign in with your mobile number and password.');
 }
 
-export async function verifyOtp(payload: OtpPayload): Promise<AuthResult> {
-  if (!isValidMobile(payload.mobile)) {
-    throw new Error('Invalid mobile number.');
-  }
-  if (payload.otp.trim().length !== 6) {
-    throw new Error('Enter the 6-digit OTP.');
-  }
-  if (payload.otp.trim() !== MOCK_OTP) {
-    throw new Error('Invalid OTP. Use 123456 for demo.');
-  }
-
-  await delay(700);
-
-  return {
-    user: resolveMockUser(payload.mobile),
-    token: `mock-jwt-verified-${payload.mobile}`,
-  };
+export async function verifyOtp(_payload: { mobile: string; otp: string }): Promise<never> {
+  throw new Error('OTP verification is not available. Please sign in with your mobile number and password.');
 }
 
-export async function verifyRegistrationOtp(
-  payload: OtpPayload,
-  registration: RegisterPayload,
-): Promise<AuthResult> {
-  if (payload.otp.trim() !== MOCK_OTP) {
-    throw new Error('Invalid OTP. Use 123456 for demo.');
-  }
-
-  await delay(700);
-
-  const user: User = {
-    id: Date.now(),
-    name: registration.name.trim(),
-    mobile: registration.mobile.trim(),
-    email: registration.email?.trim() ?? `${registration.mobile}@aashayein.local`,
-    role: registration.role,
-    village: registration.village?.trim() || 'Rampur',
-    district: registration.district?.trim() || 'Amritsar',
-    createdAt: new Date().toISOString(),
-  };
-
-  return {
-    user,
-    token: `mock-jwt-register-${user.role}-${user.id}`,
-  };
-}
-
-export async function requestPasswordReset(mobile: string): Promise<OtpSendResult> {
-  if (!isValidMobile(mobile)) {
-    throw new Error('Enter a valid 10-digit mobile number.');
-  }
-
-  await delay(500);
-
-  return {
-    message: `Reset OTP sent to +91 ${mobile}. Use ${MOCK_OTP} for demo.`,
-    expiresInSeconds: 300,
-  };
+export async function requestPasswordReset(_mobile: string): Promise<never> {
+  throw new Error('Password reset is not available on this backend yet. Please sign in with your mobile number.');
 }
 
 export async function resetPassword(
-  mobile: string,
-  otp: string,
-  newPassword: string,
-): Promise<{ message: string }> {
-  if (!isValidMobile(mobile)) {
-    throw new Error('Enter a valid 10-digit mobile number.');
-  }
-  if (otp.trim() !== MOCK_OTP) {
-    throw new Error('Invalid OTP. Use 123456 for demo.');
-  }
-  if (newPassword.length < 6) {
-    throw new Error('Password must be at least 6 characters.');
-  }
-
-  await delay(600);
-
-  return { message: 'Password updated successfully. You can now sign in.' };
+  _mobile: string,
+  _otp: string,
+  _newPassword: string,
+): Promise<never> {
+  throw new Error('Password reset is not available on this backend yet.');
 }
 
 export async function logout(): Promise<void> {
-  await delay(200);
+  return Promise.resolve();
 }

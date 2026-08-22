@@ -1,30 +1,20 @@
-import {
-  AuthResult,
-  LoginCredentials,
-  OtpPayload,
-  OtpSendResult,
-  RegisterPayload,
-} from '@/services/auth';
-import { apiClient, ApiResponse } from './client';
+import type {
+  ApiLoginResponse,
+  ApiRegisterResponse,
+  AshaRegisterPayload,
+  CitizenRegisterPayload,
+  LoginPayload,
+} from '@/types/api';
+import { apiPost } from './client';
 
-const AUTH_PREFIX = '/auth';
+export function login(payload: LoginPayload) {
+  return apiPost<ApiLoginResponse>('/api/auth/login', payload);
+}
 
-export const authApi = {
-  login: (credentials: LoginCredentials) =>
-    apiClient.post<ApiResponse<AuthResult>>(`${AUTH_PREFIX}/login`, credentials),
+export function registerCitizen(payload: CitizenRegisterPayload) {
+  return apiPost<ApiRegisterResponse>('/api/auth/register', payload);
+}
 
-  register: (payload: RegisterPayload) =>
-    apiClient.post<ApiResponse<OtpSendResult>>(`${AUTH_PREFIX}/register`, payload),
-
-  sendOtp: (mobile: string) =>
-    apiClient.post<ApiResponse<OtpSendResult>>(`${AUTH_PREFIX}/otp/send`, { mobile }),
-
-  verifyOtp: (payload: OtpPayload) =>
-    apiClient.post<ApiResponse<AuthResult>>(`${AUTH_PREFIX}/otp/verify`, payload),
-
-  forgotPassword: (mobile: string) =>
-    apiClient.post<ApiResponse<OtpSendResult>>(`${AUTH_PREFIX}/forgot-password`, { mobile }),
-
-  resetPassword: (payload: { mobile: string; otp: string; newPassword: string }) =>
-    apiClient.post<ApiResponse<{ message: string }>>(`${AUTH_PREFIX}/reset-password`, payload),
-};
+export function registerAsha(payload: AshaRegisterPayload) {
+  return apiPost<ApiRegisterResponse>('/api/ashas/register', payload);
+}
