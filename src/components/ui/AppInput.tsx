@@ -1,9 +1,9 @@
+import { AppText } from '@/components/ui/AppText';
+import { colors } from '@/constants/colors';
 import { Eye, EyeOff, type LucideIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, TextInput, View, type KeyboardTypeOptions } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { AppText } from '@/components/ui/AppText';
-import { colors } from '@/constants/colors';
 
 interface AppInputProps {
   label: string;
@@ -20,6 +20,9 @@ interface AppInputProps {
   maxLength?: number;
   autoComplete?: 'tel' | 'email' | 'password' | 'name' | 'off';
   returnKeyType?: 'done' | 'next';
+
+  // ADD THIS
+  multiline?: boolean;
 }
 
 export function AppInput({
@@ -37,6 +40,7 @@ export function AppInput({
   maxLength,
   autoComplete,
   returnKeyType,
+  multiline = false,
 }: AppInputProps) {
   const [hidden, setHidden] = useState(secureTextEntry);
   const focusProgress = useSharedValue(0);
@@ -71,6 +75,7 @@ export function AppInput({
           maxLength={maxLength}
           autoComplete={autoComplete}
           returnKeyType={returnKeyType}
+          multiline={multiline}
           onFocus={() => { focusProgress.value = withTiming(1, { duration: 160 }); }}
           onBlur={() => { focusProgress.value = withTiming(0, { duration: 160 }); }}
           className="min-h-touch flex-1 py-3 text-base text-text-primary"
