@@ -8,7 +8,7 @@ import { useCopy } from '@/hooks/useCopy';
 import { router } from 'expo-router';
 import { HeartHandshake, Languages, Mic, type LucideIcon } from 'lucide-react-native';
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -60,7 +60,11 @@ export default function WelcomeScreen() {
               </Pressable>
             </View>
 
-            <Animated.View key={activeSlide} entering={FadeInRight.duration(360)} className="items-center">
+            <Animated.View
+              key={activeSlide}
+              entering={FadeInRight.duration(360)}
+              className="w-full items-center"
+              style={styles.slideContent}>
               <View className={`h-72 w-full max-w-[360px] items-center justify-center overflow-hidden rounded-[48px] ${accent.visual}`}>
                 <View className="absolute -left-10 -top-12 h-40 w-40 rounded-full bg-white opacity-55" />
                 <View className={`absolute -bottom-9 -right-4 h-40 w-40 rounded-full ${accent.circle} opacity-15`} />
@@ -72,7 +76,7 @@ export default function WelcomeScreen() {
                   <AppText variant="caption" className="text-text-secondary">Care made simpler</AppText>
                 </View>
               </View>
-              <View className="mt-9 max-w-[350px] items-center">
+              <View className="mt-9 max-w-[350px] items-center" style={styles.slideCopy}>
                 <AppText variant="display" className="text-center text-[28px] leading-9">{slide.title}</AppText>
                 <AppText variant="body" className="mt-4 text-center leading-6 text-text-secondary">{slide.body}</AppText>
               </View>
@@ -93,3 +97,14 @@ export default function WelcomeScreen() {
     </GuestGuard>
   );
 }
+
+const styles = StyleSheet.create({
+  slideContent: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+  },
+  slideCopy: {
+    width: '100%',
+    alignItems: 'center',
+  },
+});

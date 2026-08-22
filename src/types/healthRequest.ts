@@ -1,4 +1,4 @@
-import type { RequestStatus, PriorityLevel } from '@/types/api';
+import type { PriorityLevel, RequestStatus } from '@/types/api';
 
 export type HealthRequestStatus = RequestStatus;
 

@@ -2,8 +2,8 @@ import { BrandMark } from '@/components/common/BrandMark';
 import { AnimatedCard } from '@/components/ui/AnimatedCard';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { ReactNode } from 'react';
+import { StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface AuthShellProps {
@@ -26,9 +26,12 @@ export function AuthShell({
 
   return (
     <View className="flex-1">
-      <Animated.View entering={FadeInDown.duration(380).springify()} className="mb-7 mt-2 items-center">
+      <Animated.View
+        entering={FadeInDown.duration(380).springify()}
+        className="mb-7 mt-2 w-full items-center"
+        style={styles.header}>
         <BrandMark size="sm" />
-        <View className="mt-4 max-w-[350px]">
+        <View className="mt-4 max-w-[350px]" style={styles.headerCopy}>
           <SectionHeader eyebrow={contextLabel} title={title} subtitle={subtitle} centered />
         </View>
       </Animated.View>
@@ -39,3 +42,14 @@ export function AuthShell({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+  },
+  headerCopy: {
+    width: '100%',
+    alignItems: 'center',
+  },
+});
