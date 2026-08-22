@@ -1,45 +1,160 @@
-import { BaseCard } from '@/components/ui/BaseCard';
 import { AppButton } from '@/components/ui/AppButton';
+import { AppText } from '@/components/ui/AppText';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { AppText } from '@/components/ui/AppText';
-import { useLogout } from '@/hooks/useAuthMutations';
 import { useAuthStore } from '@/stores/authStore';
-import { HeartPulse } from 'lucide-react-native';
+import { router } from 'expo-router';
+import {
+  HeartPulse,
+  Hospital,
+  Mic
+} from 'lucide-react-native';
 import { View } from 'react-native';
 
-export default function PatientHomePlaceholder() {
+export default function PatientHome() {
   const user = useAuthStore((s) => s.user);
-  const logoutMutation = useLogout();
 
   return (
     <Screen
       scrollable
-      header={<ScreenHeader contextLabel="Citizen Portal" title="Patient Home" />}>
-      <BaseCard className="items-center py-8">
-        <View className="mb-4 rounded-full bg-secondary-light p-4">
-          <HeartPulse size={32} color="#0284C7" />
+      header={
+        <ScreenHeader
+          contextLabel="Citizen Portal"
+          title="Home"
+        />
+      }
+    >
+      {/* Greeting */}
+      <View className="mb-4">
+        <AppText variant="title">
+          Namaste{user?.name ? `, ${user.name}` : ''} 👋
+        </AppText>
+
+        <AppText variant="caption" className="mt-1">
+          How can we help you today?
+        </AppText>
+      </View>
+
+      {/* Main Health Request */}
+      <BaseCard className="mb-4">
+        <View className="mb-3 flex-row items-center">
+          <View className="mr-3 rounded-full bg-teal-50 p-3">
+            <HeartPulse size={26} color="#0D9488" />
+          </View>
+
+          <View className="flex-1">
+            <AppText variant="title">
+              Need Healthcare?
+            </AppText>
+
+            <AppText variant="caption" className="mt-1">
+              Tell us about your health problem.
+            </AppText>
+          </View>
         </View>
-        <AppText variant="title" className="text-center">
-          Patient Portal Placeholder
-        </AppText>
-        <AppText variant="caption" className="mt-2 text-center">
-          Frontend Person 2 will build health requests, voice input, family timeline and nearby
-          facilities here.
-        </AppText>
-        {user ? (
-          <AppText variant="label" className="mt-4">
-            Signed in as {user.name}
-          </AppText>
-        ) : null}
+
+        <AppButton
+          title="Request Healthcare"
+          onPress={() => router.push('/health-request')}
+        />
       </BaseCard>
 
-      <AppButton
-        title="Log Out"
-        variant="outline"
-        onPress={() => logoutMutation.mutate()}
-        loading={logoutMutation.isPending}
-      />
+      {/* Voice Request */}
+      <BaseCard className="mb-4">
+        <View className="mb-3 flex-row items-center">
+          <View className="mr-3 rounded-full bg-rose-50 p-3">
+            <Mic size={26} color="#BE123C" />
+          </View>
+
+          <View className="flex-1">
+            <AppText variant="title">
+              Speak Your Problem
+            </AppText>
+
+            <AppText variant="caption" className="mt-1">
+              Describe your health problem using your voice.
+            </AppText>
+          </View>
+        </View>
+
+        <AppButton
+          title="Voice Request"
+          variant="outline"
+          onPress={() => router.push('/voice-request')}
+        />
+      </BaseCard>
+
+      {/* Quick Actions */}
+      <AppText variant="label" className="mb-3">
+        QUICK ACTIONS
+      </AppText>
+
+      <BaseCard className="mb-4">
+        <View className="flex-row flex-wrap justify-between">
+          
+          <View className="mb-3 w-[48%]">
+            <AppButton
+              title="My Requests"
+              variant="outline"
+              onPress={() => router.push('/my-requests')}
+            />
+          </View>
+
+          <View className="mb-3 w-[48%]">
+            <AppButton
+              title="Appointments"
+              variant="outline"
+              onPress={() => router.push('/appointments')}
+            />
+          </View>
+
+          <View className="mb-3 w-[48%]">
+            <AppButton
+              title="Vaccinations"
+              variant="outline"
+              onPress={() => router.push('/vaccinations')}
+            />
+          </View>
+
+          <View className="mb-3 w-[48%]">
+            <AppButton
+              title="Health History"
+              variant="outline"
+              onPress={() => router.push('/health-history')}
+            />
+          </View>
+
+        </View>
+      </BaseCard>
+
+      {/* Nearby Facilities */}
+      <BaseCard className="mb-4">
+        <View className="flex-row items-center">
+          <View className="mr-3 rounded-full bg-sky-50 p-3">
+            <Hospital size={26} color="#0284C7" />
+          </View>
+
+          <View className="flex-1">
+            <AppText variant="title">
+              Nearby Healthcare
+            </AppText>
+
+            <AppText variant="caption" className="mt-1">
+              Find nearby hospitals, PHCs and healthcare facilities.
+            </AppText>
+          </View>
+        </View>
+
+        <View className="mt-3">
+          <AppButton
+            title="Find Facilities"
+            variant="outline"
+            onPress={() => router.push('/nearby-facilities')}
+          />
+        </View>
+      </BaseCard>
+
     </Screen>
   );
 }
