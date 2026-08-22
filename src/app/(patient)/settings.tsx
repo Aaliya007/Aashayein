@@ -1,11 +1,16 @@
+import { router } from 'expo-router';
 import { View } from 'react-native';
 
+import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { useLogout } from '@/hooks/useAuthMutations';
 
 export default function Settings() {
+  const logoutMutation = useLogout();
+
   return (
     <Screen
       scrollable
@@ -17,47 +22,63 @@ export default function Settings() {
       }
     >
       <BaseCard>
-        <View className="py-2">
-          <AppText variant="title">
-            Language
+        <AppText variant="title">
+          Account
+        </AppText>
+
+        <View className="mt-5">
+          <AppText variant="label">
+            Profile
           </AppText>
 
           <AppText variant="caption" className="mt-1">
-            Hindi / English
+            Manage your personal information
           </AppText>
         </View>
 
-        <View className="mt-5 border-t border-slate-100 pt-5">
-          <AppText variant="title">
-            Notifications
-          </AppText>
-
-          <AppText variant="caption" className="mt-1">
-            Manage health reminders and updates
-          </AppText>
-        </View>
-
-        <View className="mt-5 border-t border-slate-100 pt-5">
-          <AppText variant="title">
-            Offline Mode
-          </AppText>
-
-          <AppText variant="caption" className="mt-1">
-            Access saved health information without
-            internet
-          </AppText>
-        </View>
-
-        <View className="mt-5 border-t border-slate-100 pt-5">
-          <AppText variant="title">
-            Privacy
-          </AppText>
-
-          <AppText variant="caption" className="mt-1">
-            Manage your health data and permissions
-          </AppText>
-        </View>
+        <AppButton
+          title="View Profile"
+          variant="outline"
+          onPress={() => router.push('/profile')}
+        />
       </BaseCard>
+
+      <BaseCard>
+        <AppText variant="title">
+          Language
+        </AppText>
+
+        <AppText variant="caption" className="mt-2">
+          Current language: English
+        </AppText>
+
+        <AppButton
+          title="Hindi / English"
+          variant="outline"
+          onPress={() => console.log('Language selection')}
+        />
+      </BaseCard>
+
+      <BaseCard>
+        <AppText variant="title">
+          App Information
+        </AppText>
+
+        <AppText variant="caption" className="mt-2">
+          AASHAYEN — Rural Citizen Healthcare Support
+        </AppText>
+
+        <AppText variant="caption" className="mt-1">
+          Hackathon Prototype
+        </AppText>
+      </BaseCard>
+
+      <AppButton
+        title="Log Out"
+        variant="outline"
+        onPress={() => logoutMutation.mutate()}
+        loading={logoutMutation.isPending}
+      />
     </Screen>
   );
 }

@@ -1,3 +1,4 @@
+import { useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 
 import { AppButton } from '@/components/ui/AppButton';
@@ -6,7 +7,36 @@ import { BaseCard } from '@/components/ui/BaseCard';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 
+const vaccinations = [
+  {
+    id: '1',
+    name: 'Measles Vaccine',
+    dose: 'Dose 1',
+    date: '28 Aug 2026',
+    status: 'Due',
+  },
+  {
+    id: '2',
+    name: 'Tetanus Vaccine',
+    dose: 'Dose 1',
+    date: '20 Jul 2026',
+    status: 'Completed',
+  },
+  {
+    id: '3',
+    name: 'Influenza Vaccine',
+    dose: 'Annual Dose',
+    date: '15 Sep 2026',
+    status: 'Upcoming',
+  },
+];
+
 export default function VaccinationDetails() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+
+  const vaccination =
+    vaccinations.find((item) => item.id === id) ?? vaccinations[0];
+
   return (
     <Screen
       scrollable
@@ -19,8 +49,18 @@ export default function VaccinationDetails() {
     >
       <BaseCard>
         <AppText variant="title">
-          Measles Vaccine
+          {vaccination.name}
         </AppText>
+
+        <View className="mt-5">
+          <AppText variant="caption">
+            Dose
+          </AppText>
+
+          <AppText variant="body" className="mt-1">
+            {vaccination.dose}
+          </AppText>
+        </View>
 
         <View className="mt-5">
           <AppText variant="caption">
@@ -29,9 +69,13 @@ export default function VaccinationDetails() {
 
           <AppText
             variant="body"
-            className="mt-1 text-amber-700"
+            className={`mt-1 ${
+              vaccination.status === 'Completed'
+                ? 'text-green-700'
+                : 'text-amber-700'
+            }`}
           >
-            Due
+            {vaccination.status}
           </AppText>
         </View>
 
@@ -41,17 +85,17 @@ export default function VaccinationDetails() {
           </AppText>
 
           <AppText variant="body" className="mt-1">
-            28 Aug 2026
+            {vaccination.date}
           </AppText>
         </View>
       </BaseCard>
 
-      <AppButton
-        title="Set Reminder"
-        onPress={() =>
-          console.log('Reminder set')
-        }
-      />
+      {vaccination.status !== 'Completed' && (
+        <AppButton
+          title="Set Reminder"
+          onPress={() => console.log('Reminder set')}
+        />
+      )}
     </Screen>
   );
 }

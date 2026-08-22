@@ -9,25 +9,28 @@ import { ScreenHeader } from '@/components/ui/ScreenHeader';
 const vaccinations = [
   {
     id: '1',
-    name: 'BCG',
-    status: 'Completed',
-    date: '10 Jan 2026',
+    name: 'Measles Vaccine',
+    dose: 'Dose 1',
+    date: '28 Aug 2026',
+    status: 'Due',
   },
   {
     id: '2',
-    name: 'Polio',
+    name: 'Tetanus Vaccine',
+    dose: 'Dose 1',
+    date: '20 Jul 2026',
     status: 'Completed',
-    date: '15 Feb 2026',
   },
   {
     id: '3',
-    name: 'Measles',
-    status: 'Due',
-    date: '28 Aug 2026',
+    name: 'Influenza Vaccine',
+    dose: 'Annual Dose',
+    date: '15 Sep 2026',
+    status: 'Upcoming',
   },
 ];
 
-export default function Vaccinations() {
+export default function Vaccination() {
   const router = useRouter();
 
   return (
@@ -36,48 +39,84 @@ export default function Vaccinations() {
       header={
         <ScreenHeader
           contextLabel="Citizen Portal"
-          title="Vaccinations"
+          title="Vaccination"
         />
       }
     >
       <AppText variant="caption">
-        Vaccination schedule and records
+        Track your vaccination records and upcoming doses.
+      </AppText>
+
+      <BaseCard className="mt-4">
+        <AppText variant="title">
+          Vaccination Summary
+        </AppText>
+
+        <View className="mt-4 flex-row justify-between">
+          <View>
+            <AppText variant="caption">
+              Completed
+            </AppText>
+
+            <AppText variant="display" className="mt-1">
+              1
+            </AppText>
+          </View>
+
+          <View>
+            <AppText variant="caption">
+              Upcoming
+            </AppText>
+
+            <AppText variant="display" className="mt-1">
+              2
+            </AppText>
+          </View>
+        </View>
+      </BaseCard>
+
+      <AppText variant="title" className="mt-4">
+        Vaccination Records
       </AppText>
 
       {vaccinations.map((vaccination) => (
         <Pressable
-          key={vaccination.id}
-          onPress={() =>
-            router.push('/(patient)/vaccination-details')
-          }
-        >
-          <BaseCard className="mt-4">
-            <View className="flex-row justify-between">
-              <View>
+  key={vaccination.id}
+  onPress={() =>
+    router.push({
+      pathname: '/vaccination-details',
+      params: { id: vaccination.id },
+    })
+  }
+>
+          <BaseCard className="mt-3">
+            <View className="flex-row items-start justify-between">
+              <View className="flex-1">
                 <AppText variant="title">
                   {vaccination.name}
                 </AppText>
 
-                <AppText
-                  variant="caption"
-                  className="mt-1"
-                >
-                  {vaccination.date}
+                <AppText variant="caption" className="mt-1">
+                  {vaccination.dose}
+                </AppText>
+
+                <AppText variant="caption" className="mt-2">
+                  Date: {vaccination.date}
                 </AppText>
               </View>
 
               <View
                 className={`rounded-full px-3 py-2 ${
-                  vaccination.status === 'Due'
-                    ? 'bg-amber-100'
-                    : 'bg-teal-100'
+                  vaccination.status === 'Completed'
+                    ? 'bg-green-100'
+                    : 'bg-amber-100'
                 }`}
               >
                 <AppText
                   className={
-                    vaccination.status === 'Due'
-                      ? 'text-amber-800'
-                      : 'text-teal-800'
+                    vaccination.status === 'Completed'
+                      ? 'text-green-800'
+                      : 'text-amber-800'
                   }
                 >
                   {vaccination.status}
