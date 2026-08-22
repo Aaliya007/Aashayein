@@ -1,11 +1,15 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  AxiosError,
+  InternalAxiosRequestConfig,
+} from 'axios';
 
 export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8080/api';
+  process.env.EXPO_PUBLIC_API_URL ??
+  'https://aashayen-backend.onrender.com/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -22,12 +26,15 @@ export function getAuthToken(): string | null {
   return authToken;
 }
 
-apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (authToken) {
-    config.headers.Authorization = `Bearer ${authToken}`;
-  }
-  return config;
-});
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    if (authToken) {
+      config.headers.Authorization = `Bearer ${authToken}`;
+    }
+
+    return config;
+  },
+);
 
 apiClient.interceptors.response.use(
   (response) => response,
@@ -36,12 +43,7 @@ apiClient.interceptors.response.use(
       error.response?.data?.message ??
       error.message ??
       'Something went wrong. Please try again.';
+
     return Promise.reject(new Error(message));
   },
 );
-
-export interface ApiResponse<T> {
-  data: T;
-  message?: string;
-  success?: boolean;
-}

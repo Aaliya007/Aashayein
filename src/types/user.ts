@@ -1,4 +1,4 @@
-export type UserRole = 'asha' | 'patient' | 'admin';
+export type UserRole = 'patient' | 'asha' | 'admin';
 
 export interface User {
   id: number;
@@ -6,7 +6,8 @@ export interface User {
   mobile: string;
   email: string;
   role: UserRole;
-  village?: string;
-  district?: string;
+  village: string;
+  district: string;
   createdAt: string;
+  patientId?: number;
 }

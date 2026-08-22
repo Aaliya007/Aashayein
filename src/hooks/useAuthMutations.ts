@@ -1,13 +1,13 @@
+import { authApi } from '@/services/api/auth.api';
 import { setAuthToken } from '@/services/api/client';
 import {
-  login,
   logout,
   register,
   requestPasswordReset,
   resetPassword,
   sendOtp,
   verifyOtp,
-  verifyRegistrationOtp,
+  verifyRegistrationOtp
 } from '@/services/auth';
 import { useAuthStore } from '@/stores/authStore';
 import { getHomeRouteForRole } from '@/utils/routing';
@@ -18,11 +18,43 @@ export function useLogin() {
   const setAuth = useAuthStore((s) => s.setAuth);
 
   return useMutation({
-    mutationFn: login,
+    mutationFn: async (credentials: {
+      identifier: string;
+      password: string;
+    }) => {
+      const response = await authApi.login(credentials);
+
+      console.log('LOGIN RESULT:', response.data);
+
+      return response.data;
+    },
+
     onSuccess: (result) => {
-      setAuthToken(result.token);
-      setAuth(result.user, result.token);
-      router.replace(getHomeRouteForRole(result.user.role));
+      const role =
+        result.role === 'CITIZEN'
+          ? 'patient'
+          : result.role === 'ASHA'
+            ? 'asha'
+            : 'admin';
+
+      const user = {
+        id: result.id,
+        name: result.name,
+        mobile: '',
+        email: '',
+        role,
+        village: '',
+        district: '',
+        createdAt: new Date().toISOString(),
+        patientId: result.patientId,
+      };
+
+      console.log('USER BEING STORED:', user);
+
+      // No backend token is required.
+      setAuth(user, '');
+
+      router.replace(getHomeRouteForRole(role));
     },
   });
 }

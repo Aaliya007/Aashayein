@@ -1,3 +1,7 @@
+
+import { healthRequestsApi } from '@/services/api/healthRequests.api';
+import { useAuthStore } from '@/stores/authStore';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
@@ -23,12 +27,41 @@ export default function HealthRequest() {
   const [selectedProblem, setSelectedProblem] = useState('');
   const [description, setDescription] = useState('');
 
-  const handleSubmit = () => {
-    console.log({
-      problem: selectedProblem,
-      description,
+  const user = useAuthStore((s) => s.user);
+
+  const handleSubmit = async () => {
+  if (!selectedProblem) {
+    return;
+  }
+
+  if (!user?.patientId) {
+    console.log('PATIENT ID MISSING:', user);
+    return;
+  }
+
+  const message = description.trim()
+    ? `${selectedProblem}: ${description.trim()}`
+    : selectedProblem;
+
+  try {
+    const response = await healthRequestsApi.create({
+      patientId: user.patientId,
+      message,
+      language: 'English',
+      inputType: 'TEXT',
     });
-  };
+
+    console.log('HEALTH REQUEST SUCCESS:', response.data);
+
+    router.push('/my-requests');
+  } catch (error: any) {
+    console.log('HEALTH REQUEST ERROR:', error?.message);
+    console.log('URL:', error?.config?.url);
+    console.log('BASE URL:', error?.config?.baseURL);
+    console.log('STATUS:', error?.response?.status);
+    console.log('RESPONSE:', error?.response?.data);
+  }
+};
 
   return (
     <Screen
