@@ -1,5 +1,5 @@
-import type { CaseStatus, PriorityLevel, ReferralStatus, VisitCondition } from '@/types/api';
 import type { SemanticStatusTone } from '@/components/asha/SemanticStatusBadge';
+import type { CaseStatus, PriorityLevel, ReferralStatus, VisitCondition } from '@/types/api';
 import type { VaccinationStatus } from '@/types/vaccination';
 
 interface StatusPresentation {

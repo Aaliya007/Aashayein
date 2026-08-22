@@ -1,19 +1,18 @@
 import type {
-  ApiAsha,
-  ApiCase,
-  ApiFacility,
-  ApiHealthRequest,
-  ApiLoginResponse,
-  ApiPatient,
-  ApiPatientHistory,
-  ApiReferral,
-  ApiRegisterResponse,
-  ApiVisit,
-  BackendUserRole,
-  CaseStatus,
-  PriorityLevel,
-  ReferralStatus,
-  VisitCondition,
+    ApiAsha,
+    ApiCase,
+    ApiFacility,
+    ApiHealthRequest,
+    ApiLoginResponse,
+    ApiPatient,
+    ApiPatientHistory,
+    ApiReferral,
+    ApiRegisterResponse,
+    ApiVisit,
+    BackendUserRole,
+    CaseStatus,
+    ReferralStatus,
+    VisitCondition
 } from '@/types/api';
 import type { Case } from '@/types/case';
 import type { HealthcareFacility } from '@/types/facility';
@@ -180,7 +179,7 @@ export function mapRegisterToUser(
   fallback: { mobile: string; role: UserRole; village?: string; district?: string },
 ): User {
   const id = result.userId ?? result.id ?? 0;
-  const role = result.role ? mapBackendRole(result.role) : fallback.role;
+  const role = fallback.role;
   return {
     id,
     name: result.name,
