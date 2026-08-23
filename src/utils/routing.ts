@@ -8,7 +8,7 @@ export function getHomeRouteForRole(role: UserRole): Href {
     case 'patient':
       return '/(patient)/home';
     case 'admin':
-      return '/(admin)/dashboard';
+      return '/admin/dashboard';
     default:
       return '/welcome';
   }
