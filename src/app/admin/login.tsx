@@ -31,7 +31,7 @@ export default function AdminLogin() {
       createdAt: new Date().toISOString(),
     };
 
-    setAuth(adminUser, '');
+    setAuth(adminUser);
 
     router.replace('/admin/dashboard');
 
