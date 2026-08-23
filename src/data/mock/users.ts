@@ -28,6 +28,7 @@ export const mockAdminUser: User = {
   mobile: '9876543212',
   email: 'admin@aashayein.org',
   role: 'admin',
+  village: 'Rampur',
   district: 'Amritsar',
   createdAt: '2024-11-01T08:00:00Z',
 };
