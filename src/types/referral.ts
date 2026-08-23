@@ -1,4 +1,6 @@
-export type ReferralStatus = 'pending' | 'accepted' | 'completed' | 'declined';
+import type { ApiFacility, ReferralStatus } from '@/types/api';
+
+export type { ReferralStatus };
 
 export interface Referral {
   id: number;
@@ -10,4 +12,7 @@ export interface Referral {
   status: ReferralStatus;
   createdAt: string;
   updatedAt: string;
+  patientName?: string;
+  facilityName?: string;
+  facility?: ApiFacility;
 }

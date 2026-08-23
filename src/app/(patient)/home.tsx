@@ -1,15 +1,11 @@
+import { BrandMark } from '@/components/common/BrandMark';
+import { BaseCard } from '@/components/ui/BaseCard';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { useAuthStore } from '@/stores/authStore';
-import { router } from 'expo-router';
-import {
-  HeartPulse,
-  Hospital,
-  Mic
-} from 'lucide-react-native';
 import { View } from 'react-native';
 
 export default function PatientHome() {
@@ -18,17 +14,13 @@ export default function PatientHome() {
   return (
     <Screen
       scrollable
-      header={
-        <ScreenHeader
-          contextLabel="Citizen Portal"
-          title="Home"
-        />
-      }
-    >
-      {/* Greeting */}
-      <View className="mb-4">
-        <AppText variant="title">
-          Namaste{user?.name ? `, ${user.name}` : ''} 👋
+      header={<ScreenHeader contextLabel="Citizen Portal" title="Patient Home" />}>
+      <BaseCard className="items-center py-8">
+        <View className="mb-4">
+          <BrandMark size="sm" />
+        </View>
+        <AppText variant="title" className="text-center">
+          Patient Portal Placeholder
         </AppText>
 
         <AppText variant="caption" className="mt-1">

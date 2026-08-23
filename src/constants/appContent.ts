@@ -90,18 +90,18 @@ export interface DemoAccount {
 
 export const demoAccounts: DemoAccount[] = [
   {
-    role: 'asha',
+    role: 'patient',
     name: 'Sunita Devi',
     identifier: '9876543210',
     password: 'demo',
-    label: 'ASHA',
+    label: 'Citizen',
   },
   {
-    role: 'patient',
+    role: 'asha',
     name: 'Priya Sharma',
     identifier: '9876543211',
     password: 'demo',
-    label: 'Citizen',
+    label: 'ASHA',
   },
   {
     role: 'admin',

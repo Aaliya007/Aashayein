@@ -7,6 +7,7 @@ export interface Vaccination {
   id: number;
   patientId: number;
   name: string;
+  dose?: string;
   status: VaccinationStatus;
   dueDate: string;
   completedAt?: string;

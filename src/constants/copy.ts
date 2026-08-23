@@ -18,7 +18,7 @@ export const copy = {
     continue: 'Continue',
     loginEyebrow: 'Secure Sign In',
     loginTitle: 'Welcome back',
-    loginBody: 'Use your mobile number or email. Demo accounts below fill the form for the hackathon.',
+    loginBody: 'Use your mobile number or email. Redefining and enhancing healthcare access.',
     mobileOrEmail: 'Mobile or Email',
     mobilePlaceholder: '10-digit mobile or email',
     password: 'Password',

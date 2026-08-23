@@ -55,63 +55,39 @@ export function useLogin() {
       setAuth(user, '');
 
       router.replace(getHomeRouteForRole(role));
-    },
-  });
-}
-
-export function useRegister() {
-  const setPendingOtp = useAuthStore((s) => s.setPendingOtp);
-  const setPendingRegistration = useAuthStore((s) => s.setPendingRegistration);
-
-  return useMutation({
-    mutationFn: register,
-    onSuccess: (_result, variables) => {
-      setPendingRegistration(variables);
-      setPendingOtp(variables.mobile, 'register');
-      router.push('/auth/otp');
-    },
-  });
-}
-
-export function useVerifyOtp() {
-  const setAuth = useAuthStore((s) => s.setAuth);
-  const clearPendingOtp = useAuthStore((s) => s.clearPendingOtp);
-  const clearPendingRegistration = useAuthStore((s) => s.clearPendingRegistration);
-  const pendingRegistration = useAuthStore((s) => s.pendingRegistration);
-  const otpPurpose = useAuthStore((s) => s.otpPurpose);
-
-  return useMutation({
-    mutationFn: async ({ mobile, otp }: { mobile: string; otp: string }) => {
-      if (otpPurpose === 'register' && pendingRegistration) {
-        return verifyRegistrationOtp({ mobile, otp }, pendingRegistration);
-      }
-      return verifyOtp({ mobile, otp });
-    },
-    onSuccess: (result) => {
-      setAuthToken(result.token);
-      setAuth(result.user, result.token);
-      clearPendingOtp();
-      clearPendingRegistration();
+      setAuth(result.user);
       router.replace(getHomeRouteForRole(result.user.role));
     },
   });
 }
 
-export function useForgotPassword() {
-  const setPendingOtp = useAuthStore((s) => s.setPendingOtp);
+export function useRegister() {
+  const setAuth = useAuthStore((s) => s.setAuth);
 
   return useMutation({
-    mutationFn: requestPasswordReset,
-    onSuccess: (_result, mobile) => {
-      setPendingOtp(mobile, 'forgot_password');
-      router.push({ pathname: '/auth/otp', params: { mode: 'reset' } });
+    mutationFn: register,
+    onSuccess: (result) => {
+      setAuth(result.user);
+      router.replace(getHomeRouteForRole(result.user.role));
     },
   });
 }
 
-export function useResetPassword() {
-  const clearPendingOtp = useAuthStore((s) => s.clearPendingOtp);
+export function useVerifyOtp() {
+  return useMutation({
+    mutationFn: async ({ mobile, otp }: { mobile: string; otp: string }) => {
+      return verifyOtp({ mobile, otp });
+    },
+  });
+}
 
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: requestPasswordReset,
+  });
+}
+
+export function useResetPassword() {
   return useMutation({
     mutationFn: ({
       mobile,
@@ -122,22 +98,12 @@ export function useResetPassword() {
       otp: string;
       newPassword: string;
     }) => resetPassword(mobile, otp, newPassword),
-    onSuccess: () => {
-      clearPendingOtp();
-      router.replace('/auth/login');
-    },
   });
 }
 
 export function useSendLoginOtp() {
-  const setPendingOtp = useAuthStore((s) => s.setPendingOtp);
-
   return useMutation({
     mutationFn: sendOtp,
-    onSuccess: (_result, mobile) => {
-      setPendingOtp(mobile, 'login');
-      router.push('/auth/otp');
-    },
   });
 }
 
@@ -147,7 +113,6 @@ export function useLogout() {
   return useMutation({
     mutationFn: logout,
     onSuccess: () => {
-      setAuthToken(null);
       clearAuth();
       router.replace('/welcome');
     },
