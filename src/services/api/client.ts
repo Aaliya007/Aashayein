@@ -1,3 +1,15 @@
+import axios, {
+  AxiosError,
+  InternalAxiosRequestConfig,
+} from 'axios';
+
+export const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL ??
+  'https://aashayen-backend.onrender.com/api';
+
+export const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 60000,
 import { API_BASE_URL } from '@/config/api';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
@@ -20,6 +32,27 @@ apiClient.interceptors.request.use((config) => {
     delete config.headers.authorization;
   }
 
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    if (authToken) {
+      config.headers.Authorization = `Bearer ${authToken}`;
+    }
+
+    return config;
+  },
+);
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError<{ message?: string }>) => {
+    const message =
+      error.response?.data?.message ??
+      error.message ??
+      'Something went wrong. Please try again.';
+
+    return Promise.reject(new Error(message));
+  },
+);
   if (__DEV__) {
     const method = (config.method ?? 'get').toUpperCase();
     const url = `${config.baseURL ?? ''}${config.url ?? ''}`;
