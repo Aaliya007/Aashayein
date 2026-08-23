@@ -65,12 +65,9 @@ export default function RequestDetails() {
         console.log('REQUEST DETAILS:', response.data);
 
         setRequest(response.data);
-      } catch (err: any) {
-        console.log('REQUEST DETAILS ERROR:', err?.message);
-
-        setError(
-          err?.message ?? 'Unable to load request details.',
-        );
+      } catch (error: unknown) {
+        console.log('REQUEST DETAILS ERROR:', error);
+        setError(error instanceof Error ? error.message : 'Unable to load request details.');
       } finally {
         setLoading(false);
       }

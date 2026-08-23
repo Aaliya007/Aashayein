@@ -26,42 +26,40 @@ const healthOptions = [
 export default function HealthRequest() {
   const [selectedProblem, setSelectedProblem] = useState('');
   const [description, setDescription] = useState('');
+  const [error, setError] = useState('');
 
   const user = useAuthStore((s) => s.user);
 
   const handleSubmit = async () => {
-  if (!selectedProblem) {
-    return;
-  }
+    setError('');
+    if (!selectedProblem) {
+      return;
+    }
 
-  if (!user?.patientId) {
-    console.log('PATIENT ID MISSING:', user);
-    return;
-  }
+    if (!user?.patientId) {
+      console.log('PATIENT ID MISSING:', user);
+      return;
+    }
 
-  const message = description.trim()
-    ? `${selectedProblem}: ${description.trim()}`
-    : selectedProblem;
+    const message = description.trim()
+      ? `${selectedProblem}: ${description.trim()}`
+      : selectedProblem;
 
-  try {
-    const response = await healthRequestsApi.create({
-      patientId: user.patientId,
-      message,
-      language: 'English',
-      inputType: 'TEXT',
-    });
+    try {
+      await healthRequestsApi.create({
+        patientId: user.patientId,
+        message,
+        language: 'English',
+        inputType: 'TEXT',
+      });
 
-    console.log('HEALTH REQUEST SUCCESS:', response.data);
+      router.push('/my-requests');
+    } catch (error: unknown) {
+      console.log('HEALTH REQUEST ERROR:', error);
+      setError(error instanceof Error ? error.message : 'Unable to submit your health request.');
+    }
+  };
 
-    router.push('/my-requests');
-  } catch (error: any) {
-    console.log('HEALTH REQUEST ERROR:', error?.message);
-    console.log('URL:', error?.config?.url);
-    console.log('BASE URL:', error?.config?.baseURL);
-    console.log('STATUS:', error?.response?.status);
-    console.log('RESPONSE:', error?.response?.data);
-  }
-};
 
   return (
     <Screen
@@ -135,6 +133,7 @@ export default function HealthRequest() {
       />
 
       <View className="mt-3">
+        {error ? <AppText variant="caption" className="mb-3 text-critical">{error}</AppText> : null}
         <AppButton
           title="Submit Health Request"
           onPress={handleSubmit}

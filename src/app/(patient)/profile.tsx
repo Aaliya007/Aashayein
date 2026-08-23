@@ -4,17 +4,16 @@ import { BaseCard } from '@/components/ui/BaseCard';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { patientsApi } from '@/services/api/patients.api';
+import { mapPatient } from '@/services/api/mappers';
 import { useAuthStore } from '@/stores/authStore';
+import type { Patient } from '@/types/patient';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
 
-  const [profile, setProfile] =
-    useState<
-      Awaited<ReturnType<typeof patientsApi.getById>>['data'] | null
-    >(null);
+  const [profile, setProfile] = useState<Patient | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -36,13 +35,10 @@ export default function Profile() {
 
         console.log('PATIENT PROFILE:', response.data);
 
-        setProfile(response.data);
-      } catch (err: any) {
-        console.log('PATIENT PROFILE ERROR:', err?.message);
-
-        setError(
-          err?.message ?? 'Unable to load your profile.',
-        );
+        setProfile(mapPatient(response.data));
+      } catch (error: unknown) {
+        console.log('PATIENT PROFILE ERROR:', error);
+        setError(error instanceof Error ? error.message : 'Unable to load your profile.');
       } finally {
         setLoading(false);
       }

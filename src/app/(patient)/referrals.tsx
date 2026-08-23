@@ -31,11 +31,9 @@ export default function Referrals() {
         );
 
         setReferrals(patientReferrals);
-      } catch (err: any) {
-        console.log('REFERRALS ERROR:', err?.message);
-        setError(
-          err?.message ?? 'Unable to load referrals.',
-        );
+      } catch (error: unknown) {
+        console.log('REFERRALS ERROR:', error);
+        setError(error instanceof Error ? error.message : 'Unable to load referrals.');
       } finally {
         setLoading(false);
       }

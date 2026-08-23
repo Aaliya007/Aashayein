@@ -35,11 +35,9 @@ export default function MyRequests() {
         console.log('MY REQUESTS:', response.data);
 
         setRequests(response.data);
-      } catch (err: any) {
-        console.log('MY REQUESTS ERROR:', err?.message);
-        setError(
-          err?.message ?? 'Unable to load your requests.',
-        );
+      } catch (error: unknown) {
+        console.log('MY REQUESTS ERROR:', error);
+        setError(error instanceof Error ? error.message : 'Unable to load your requests.');
       } finally {
         setLoading(false);
       }

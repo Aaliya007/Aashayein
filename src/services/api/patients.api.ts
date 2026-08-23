@@ -1,34 +1,24 @@
 import { apiClient } from './client';
+import type { ApiCase, ApiHealthRequest, ApiPatient, ApiReferral, ApiVisit } from '@/types/api';
 
-export interface PatientProfile {
-  id: number;
-  name?: string;
-  mobile?: string;
-  email?: string;
-  village?: string;
-  district?: string;
-  address?: string;
-  dateOfBirth?: string;
-  gender?: string;
-  emergencyContact?: string;
-}
+export type PatientProfile = ApiPatient;
 
 export interface HealthHistory {
-  patient?: PatientProfile;
-  healthRequests?: any[];
-  cases?: any[];
-  visits?: any[];
-  referrals?: any[];
+  patient: PatientProfile;
+  healthRequests?: ApiHealthRequest[];
+  cases?: ApiCase[];
+  visits?: ApiVisit[];
+  referrals?: ApiReferral[];
 }
 
 export const patientsApi = {
   getById: (patientId: number) =>
     apiClient.get<PatientProfile>(
-      `/patients/${patientId}`,
+      `/api/patients/${patientId}`,
     ),
 
   getHistory: (patientId: number) =>
     apiClient.get<HealthHistory>(
-      `/patients/${patientId}/history`,
+      `/api/patients/${patientId}/history`,
     ),
 };

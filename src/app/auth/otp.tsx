@@ -66,7 +66,6 @@ export default function OtpScreen() {
     try {
       const result = await sendOtp(mobile);
       setPendingOtp(mobile, otpPurpose ?? 'login');
-      setResendMessage(result.message);
       countdown.restart();
     } catch (error) {
       setLocalError(error instanceof Error ? error.message : 'Failed to resend OTP.');

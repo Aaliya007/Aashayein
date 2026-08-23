@@ -6,7 +6,7 @@ export const mockHealthRequests: HealthRequest[] = [
     patientId: 1,
     message: 'Persistent headache for 3 days with mild fever.',
     lang: 'en',
-    status: 'in_review',
+    status: 'PROCESSING',
     createdAt: '2026-08-18T10:30:00Z',
   },
   {
@@ -14,7 +14,7 @@ export const mockHealthRequests: HealthRequest[] = [
     patientId: 1,
     message: 'Need guidance for seasonal allergies and cough.',
     lang: 'hi',
-    status: 'pending',
+    status: 'SUBMITTED',
     createdAt: '2026-08-19T14:15:00Z',
   },
 ];

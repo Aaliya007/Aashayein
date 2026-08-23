@@ -6,6 +6,8 @@ import { AppText } from '@/components/ui/AppText';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { useAuthStore } from '@/stores/authStore';
+import { Redirect, router } from 'expo-router';
 
 const API_BASE_URL =
   'https://aashayen-backend.onrender.com/api';
@@ -25,6 +27,8 @@ interface AnalyticsOverview {
 }
 
 export default function AdminDashboard() {
+  const user = useAuthStore((state) => state.user);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
   const [data, setData] =
     useState<AnalyticsOverview | null>(null);
 
@@ -77,8 +81,14 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    loadDashboard();
-  }, []);
+    if (user?.role === 'admin') {
+      loadDashboard();
+    }
+  }, [user?.role]);
+
+  if (user?.role !== 'admin') {
+    return <Redirect href="/admin/login" />;
+  }
 
   return (
     <Screen
@@ -265,6 +275,14 @@ export default function AdminDashboard() {
             title="Refresh Dashboard"
             variant="outline"
             onPress={loadDashboard}
+          />
+          <AppButton
+            title="Log Out"
+            variant="outline"
+            onPress={() => {
+              clearAuth();
+              router.replace('/admin/login');
+            }}
           />
         </>
       ) : null}

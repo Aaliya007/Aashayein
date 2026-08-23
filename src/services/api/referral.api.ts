@@ -12,7 +12,11 @@ export function createReferral(payload: CreateReferralPayload) {
 }
 
 export function listReferrals(query?: ReferralQuery) {
-  return apiGet<ApiReferral[]>('/api/referrals', query);
+  return apiGet<ApiReferral[]>('/api/referrals', query && {
+    status: query.status,
+    facilityId: query.facilityId,
+    createdBy: query.createdBy,
+  });
 }
 
 export function getReferral(id: number) {

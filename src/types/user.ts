@@ -6,12 +6,9 @@ export interface User {
   mobile: string;
   email: string;
   role: UserRole;
-  village: string;
-  district: string;
   village?: string;
   district?: string;
   ashaId?: number;
-  patientId?: number;
   createdAt: string;
   patientId?: number;
 }

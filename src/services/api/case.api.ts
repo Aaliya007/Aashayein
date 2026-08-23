@@ -8,7 +8,11 @@ export interface AshaCaseQuery {
 }
 
 export function listAshaCases(query?: AshaCaseQuery) {
-  return apiGet<ApiCase[]>('/api/asha/cases', query);
+  return apiGet<ApiCase[]>('/api/asha/cases', query && {
+    ashaId: query.ashaId,
+    priorityLevel: query.priorityLevel,
+    status: query.status,
+  });
 }
 
 export function getAshaCase(id: number) {

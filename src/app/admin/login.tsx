@@ -7,42 +7,29 @@ import { AppText } from '@/components/ui/AppText';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { MOCK_ADMIN } from '@/data/mock/users';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function AdminLogin() {
   const setAuth = useAuthStore((s) => s.setAuth);
 
-  const [username, setUsername] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-  if (
-    username.trim().toLowerCase() === 'admin' &&
-    password === 'admin123'
-  ) {
-    const adminUser = {
-      id: 999,
-      name: 'Administrator',
-      mobile: '0000000000',
-      email: 'admin@aashayein.com',
-      role: 'admin' as const,
-      village: '',
-      district: '',
-      createdAt: new Date().toISOString(),
-    };
+    if (phone.trim() === MOCK_ADMIN.user.mobile && password === MOCK_ADMIN.password) {
+      setAuth(MOCK_ADMIN.user);
 
-    setAuth(adminUser);
+      router.replace('/admin/dashboard');
 
-    router.replace('/admin/dashboard');
+      return;
+    }
 
-    return;
-  }
-
-  Alert.alert(
-    'Invalid Login',
-    'Use username: admin and password: admin123'
-  );
-};
+    Alert.alert(
+      'Invalid Login',
+      'Use phone: 9999999999 and password: Admin@123',
+    );
+  };
 
   return (
     <Screen
@@ -65,14 +52,14 @@ export default function AdminLogin() {
 
         <View className="mt-6">
           <AppText variant="caption">
-            Username
+            Phone
           </AppText>
 
           <TextInput
-            value={username}
-            onChangeText={setUsername}
-            placeholder="Enter username"
-            autoCapitalize="none"
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="Enter phone number"
+            keyboardType="phone-pad"
             className="mt-2 rounded-xl border border-slate-200 px-4 py-3"
           />
         </View>
@@ -100,7 +87,7 @@ export default function AdminLogin() {
         </View>
 
         <AppText variant="caption" className="mt-4 text-center">
-          Demo credentials: admin / admin123
+          Demo credentials: 9999999999 / Admin@123
         </AppText>
       </BaseCard>
     </Screen>

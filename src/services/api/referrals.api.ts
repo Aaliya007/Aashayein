@@ -1,25 +1,17 @@
 import { apiClient } from './client';
+import type { ApiReferral } from '@/types/api';
 
-export interface Referral {
-  id: number;
-  caseId: number;
-  patientId: number;
-  facilityId: number;
-  createdBy: number;
-  reason: string;
-  status: 'PENDING' | 'ACCEPTED' | 'COMPLETED';
-  createdAt?: string;
-}
+export type Referral = ApiReferral;
 
 export const referralsApi = {
   getAll: () =>
-    apiClient.get<Referral[]>('/referrals'),
+    apiClient.get<Referral[]>('/api/referrals'),
 
   getById: (id: number) =>
-    apiClient.get<Referral>(`/referrals/${id}`),
+    apiClient.get<Referral>(`/api/referrals/${id}`),
 
   getByCase: (caseId: number) =>
     apiClient.get<Referral[]>(
-      `/referrals/case/${caseId}`,
+      `/api/referrals/case/${caseId}`,
     ),
 };

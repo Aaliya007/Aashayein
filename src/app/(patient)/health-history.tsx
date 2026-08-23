@@ -3,6 +3,7 @@ import { BaseCard } from '@/components/ui/BaseCard';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { patientsApi } from '@/services/api/patients.api';
+import { mapPatientHistory } from '@/services/api/mappers';
 import { useAuthStore } from '@/stores/authStore';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
@@ -10,7 +11,7 @@ import { ActivityIndicator, View } from 'react-native';
 export default function HealthHistory() {
   const user = useAuthStore((s) => s.user);
 
-  const [history, setHistory] = useState<any>(null);
+  const [history, setHistory] = useState<ReturnType<typeof mapPatientHistory> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -32,17 +33,10 @@ export default function HealthHistory() {
           response.data,
         );
 
-        setHistory(response.data);
-      } catch (err: any) {
-        console.log(
-          'PATIENT HEALTH HISTORY ERROR:',
-          err?.message,
-        );
-
-        setError(
-          err?.message ??
-            'Unable to load health history.',
-        );
+        setHistory(mapPatientHistory(response.data));
+      } catch (error: unknown) {
+        console.log('PATIENT HEALTH HISTORY ERROR:', error);
+        setError(error instanceof Error ? error.message : 'Unable to load health history.');
       } finally {
         setLoading(false);
       }
@@ -202,9 +196,7 @@ export default function HealthHistory() {
               variant="body"
               className="mt-1"
             >
-              {patient.user?.name ||
-                patient.user?.mobile ||
-                'Not available'}
+              {patient.name || patient.mobile || 'Not available'}
             </AppText>
           </View>
 
@@ -254,7 +246,7 @@ export default function HealthHistory() {
           cases
             .slice(0, 5)
             .map(
-              (item: any, index: number) => (
+              (item, index) => (
                 <View
                   key={item.id ?? index}
                   className="mt-5 border-b border-slate-100 pb-4"
@@ -319,7 +311,7 @@ export default function HealthHistory() {
           </AppText>
         ) : (
           visits.map(
-            (visit: any, index: number) => (
+            (visit, index) => (
               <View
                 key={visit.id ?? index}
                 className="mt-5"
@@ -336,8 +328,7 @@ export default function HealthHistory() {
                   variant="body"
                   className="mt-2"
                 >
-                  {visit.symptomsObserved ||
-                    'Health visit'}
+                  {visit.symptoms || 'Health visit'}
                 </AppText>
 
                 {visit.temperature != null ? (
@@ -389,7 +380,7 @@ export default function HealthHistory() {
           </AppText>
         ) : (
           referrals.map(
-            (referral: any, index: number) => (
+            (referral, index) => (
               <View
                 key={referral.id ?? index}
                 className="mt-5"

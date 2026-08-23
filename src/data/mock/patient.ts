@@ -3,6 +3,8 @@ import { Patient } from '@/types/patient';
 export const mockPatient: Patient = {
   id: 1,
   userId: 1,
+  name: 'Ram Kaur',
+  mobile: '9876501234',
   dateOfBirth: '1992-06-18',
   gender: 'female',
   address: 'Village Rampur, Amritsar, Punjab',

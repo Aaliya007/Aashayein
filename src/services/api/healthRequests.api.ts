@@ -28,17 +28,17 @@ export interface HealthRequestResponse {
 export const healthRequestsApi = {
   create: (payload: CreateHealthRequestPayload) =>
     apiClient.post<HealthRequestResponse>(
-      '/health-requests',
+      '/api/health-requests',
       payload,
     ),
 
   getById: (id: number) =>
     apiClient.get<HealthRequestResponse>(
-      `/health-requests/${id}`,
+      `/api/health-requests/${id}`,
     ),
 
   getByPatient: (patientId: number) =>
     apiClient.get<HealthRequestResponse[]>(
-      `/health-requests/patient/${patientId}`,
+      `/api/health-requests/patient/${patientId}`,
     ),
 };

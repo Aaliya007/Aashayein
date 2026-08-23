@@ -6,16 +6,36 @@ import { AppText } from '@/components/ui/AppText';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-
-const FACILITY_LATITUDE = 26.1001;
-const FACILITY_LONGITUDE = 83.2001;
-const FACILITY_PHONE = '9876543210';
+import { getFacility } from '@/services/api/facility.api';
+import type { ApiFacility } from '@/types/api';
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 
 export default function FacilityDetails() {
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const [facility, setFacility] = useState<ApiFacility | null>(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const facilityId = Number(id);
+    if (!Number.isInteger(facilityId) || facilityId <= 0) {
+      setError('Facility information is not available.');
+      return;
+    }
+
+    getFacility(facilityId).then(setFacility).catch((error: unknown) => {
+      setError(error instanceof Error ? error.message : 'Unable to load facility.');
+    });
+  }, [id]);
+
   const handleDirections = async () => {
+    if (facility?.latitude == null || facility.longitude == null) {
+      Alert.alert('Directions unavailable', 'This facility does not have a location yet.');
+      return;
+    }
     const url =
       `https://www.google.com/maps/dir/?api=1` +
-      `&destination=${FACILITY_LATITUDE},${FACILITY_LONGITUDE}`;
+      `&destination=${facility.latitude},${facility.longitude}`;
 
     try {
       await Linking.openURL(url);
@@ -28,7 +48,11 @@ export default function FacilityDetails() {
   };
 
   const handleContact = async () => {
-    const url = `tel:${FACILITY_PHONE}`;
+    if (!facility?.phone) {
+      Alert.alert('Contact unavailable', 'This facility does not have a phone number yet.');
+      return;
+    }
+    const url = `tel:${facility.phone}`;
 
     try {
       await Linking.openURL(url);
@@ -50,9 +74,9 @@ export default function FacilityDetails() {
         />
       }
     >
-      <BaseCard>
+      {error ? <BaseCard><AppText variant="caption">{error}</AppText></BaseCard> : !facility ? <BaseCard><AppText variant="caption">Loading facility...</AppText></BaseCard> : <BaseCard>
         <AppText variant="title">
-          Primary Health Centre
+          {facility.name}
         </AppText>
 
         <View className="mt-5">
@@ -61,7 +85,7 @@ export default function FacilityDetails() {
           </AppText>
 
           <AppText variant="body" className="mt-1">
-            PHC
+            {facility.type}
           </AppText>
         </View>
 
@@ -71,7 +95,7 @@ export default function FacilityDetails() {
           </AppText>
 
           <AppText variant="body" className="mt-1">
-            1.2 km
+            {facility.address}, {facility.district}
           </AppText>
         </View>
 
@@ -81,15 +105,15 @@ export default function FacilityDetails() {
           </AppText>
 
           <AppText variant="body" className="mt-1">
-            General consultation, maternal care,
-            vaccination and basic medicines
+            Contact the facility for available services.
           </AppText>
         </View>
-      </BaseCard>
+      </BaseCard>}
 
       <AppButton
         title="Get Directions"
         onPress={handleDirections}
+        disabled={facility?.latitude == null || facility.longitude == null}
       />
 
       <View className="mt-3">
@@ -97,6 +121,7 @@ export default function FacilityDetails() {
           title="Contact Facility"
           variant="outline"
           onPress={handleContact}
+          disabled={!facility?.phone}
         />
       </View>
     </Screen>

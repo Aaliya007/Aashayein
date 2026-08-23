@@ -1,15 +1,17 @@
 import { BrandMark } from '@/components/common/BrandMark';
-import { BaseCard } from '@/components/ui/BaseCard';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { BaseCard } from '@/components/ui/BaseCard';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { useAuthStore } from '@/stores/authStore';
+import { useRouter } from 'expo-router';
+import { HeartPulse, Hospital, Mic } from 'lucide-react-native';
 import { View } from 'react-native';
 
 export default function PatientHome() {
   const user = useAuthStore((s) => s.user);
+  const router = useRouter();
 
   return (
     <Screen
@@ -20,13 +22,13 @@ export default function PatientHome() {
           <BrandMark size="sm" />
         </View>
         <AppText variant="title" className="text-center">
-          Patient Portal Placeholder
+          Patient Portal
         </AppText>
 
         <AppText variant="caption" className="mt-1">
           How can we help you today?
         </AppText>
-      </View>
+      </BaseCard>
 
       {/* Main Health Request */}
       <BaseCard className="mb-4">
@@ -110,7 +112,7 @@ export default function PatientHome() {
       <AppButton
         title="Vaccinations"
         variant="outline"
-        onPress={() => router.push('/vaccinations')}
+        onPress={() => router.push('/(patient)/vaccinations')}
       />
     </View>
 
