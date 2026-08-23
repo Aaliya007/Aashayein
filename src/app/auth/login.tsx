@@ -6,8 +6,10 @@ import { AppText } from '@/components/ui/AppText';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenBackground } from '@/components/ui/ScreenBackground';
 import { TextLink } from '@/components/ui/TextLink';
-import { useCopy } from '@/hooks/useCopy';
+import { MOCK_ADMIN } from '@/data/mock/users';
 import { useLogin, useSendLoginOtp } from '@/hooks/useAuthMutations';
+import { useCopy } from '@/hooks/useCopy';
+import { useAuthStore } from '@/stores/authStore';
 import { router } from 'expo-router';
 import { KeyRound, Smartphone } from 'lucide-react-native';
 import { useState } from 'react';
@@ -19,8 +21,23 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const loginMutation = useLogin();
   const otpMutation = useSendLoginOtp();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const [localError, setLocalError] = useState('');
 
   const handleLogin = () => {
+    setLocalError('');
+
+    if (identifier.trim() === MOCK_ADMIN.user.mobile) {
+      if (password === MOCK_ADMIN.password) {
+        setAuth(MOCK_ADMIN.user);
+        router.replace('/admin/dashboard');
+        return;
+      }
+
+      setLocalError('Invalid phone number or password.');
+      return;
+    }
+
     loginMutation.mutate({ identifier, password }, { onError: () => undefined });
   };
 
@@ -28,7 +45,7 @@ export default function LoginScreen() {
     otpMutation.mutate(identifier, { onError: () => undefined });
   };
 
-  const errorMessage = loginMutation.error?.message || otpMutation.error?.message;
+  const errorMessage = localError || loginMutation.error?.message || otpMutation.error?.message;
 
   return (
     <ScreenBackground>

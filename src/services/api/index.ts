@@ -12,3 +12,4 @@ export * from './visit.api';
 export * from './referral.api';
 export * from './facility.api';
 export * from './healthRequest.api';
+export * from './analytics.api';

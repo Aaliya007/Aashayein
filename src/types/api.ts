@@ -233,3 +233,29 @@ export interface LoginPayload {
   mobile: string;
   password: string;
 }
+
+export type HeatmapPeriodDays = 7 | 30 | 90;
+
+export interface HealthHeatmapLocation {
+  latitude: number;
+  longitude: number;
+  requestCount: number;
+  highPriorityCount: number;
+  mediumPriorityCount: number;
+  lowPriorityCount: number;
+  criticalPriorityCount: number;
+  intensity: number;
+}
+
+export interface HealthHeatmapResponse {
+  periodDays: number;
+  totalRequests: number;
+  requestsWithoutLocation: number;
+  locations: HealthHeatmapLocation[];
+}
+
+export interface HealthHeatmapQuery {
+  days?: HeatmapPeriodDays;
+  district?: string;
+  priorityLevel?: PriorityLevel;
+}

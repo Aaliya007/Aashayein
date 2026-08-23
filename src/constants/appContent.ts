@@ -1,3 +1,4 @@
+import { MOCK_ADMIN } from '@/data/mock/users';
 import { UserRole } from '@/types/user';
 
 export type AppLanguage = 'en' | 'hi' | 'pa';
@@ -105,9 +106,9 @@ export const demoAccounts: DemoAccount[] = [
   },
   {
     role: 'admin',
-    name: 'Dr. Rajesh Kumar',
-    identifier: 'admin@aashayein.org',
-    password: 'demo',
+    name: MOCK_ADMIN.user.name,
+    identifier: MOCK_ADMIN.user.mobile,
+    password: MOCK_ADMIN.password,
     label: 'Admin',
   },
 ];

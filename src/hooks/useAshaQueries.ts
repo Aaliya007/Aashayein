@@ -16,6 +16,7 @@ import {
   listVisitsForCase,
   updateAshaCaseStatus,
   updateReferralStatus,
+  getHealthHeatmap,
 } from '@/services/api';
 import {
   flattenVisitsFromCases,
@@ -32,6 +33,7 @@ import type {
   CreateHealthRequestPayload,
   CreateReferralPayload,
   CreateVisitPayload,
+  HealthHeatmapQuery,
   PriorityLevel,
   ReferralStatus,
 } from '@/types/api';
@@ -51,6 +53,7 @@ export const queryKeys = {
   visit: (id: number) => ['visit', id] as const,
   caseVisits: (caseId: number) => ['visits-case', caseId] as const,
   patientRequests: (patientId: number) => ['health-requests-patient', patientId] as const,
+  healthHeatmap: (filters: HealthHeatmapQuery) => ['health-heatmap', filters] as const,
 };
 
 export function useCurrentAshaId(): number | undefined {
@@ -112,6 +115,13 @@ export function usePatientHistory(patientId?: number) {
     queryKey: queryKeys.patientHistory(patientId ?? 0),
     enabled: Number.isFinite(patientId) && (patientId ?? 0) > 0,
     queryFn: async () => mapPatientHistory(await getPatientHistory(patientId as number)),
+  });
+}
+
+export function useHealthHeatmap(filters: HealthHeatmapQuery) {
+  return useQuery({
+    queryKey: queryKeys.healthHeatmap(filters),
+    queryFn: () => getHealthHeatmap(filters),
   });
 }
 

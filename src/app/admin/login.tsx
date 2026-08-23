@@ -27,7 +27,7 @@ export default function AdminLogin() {
 
     Alert.alert(
       'Invalid Login',
-      'Use phone: 9999999999 and password: Admin@123',
+      'Invalid phone number or password.',
     );
   };
 
